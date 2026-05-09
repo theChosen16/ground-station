@@ -15,3 +15,19 @@ Source imagery for satellite icon assets under this folder.
     - `64/25544.png`
     - `128/25544.png`
     - `256/25544.png`
+
+- `7530.png` (OSCAR 7 icon source image)
+  - Source URL: https://en.wikipedia.org/wiki/AMSAT-OSCAR_7#/media/File:AMSAT-OSCAR_7.jpg (direct file: https://upload.wikimedia.org/wikipedia/en/a/ad/AMSAT-OSCAR_7.jpg)
+  - Description: AMSAT-OSCAR 7 (AO-7) amateur radio satellite
+  - Processing note: white background removed via edge-connected color-key extraction, foreground tight-trimmed and center-fitted, then exported as transparent icon presets:
+    - `64/7530.png`
+    - `128/7530.png`
+    - `256/7530.png`
+
+- `43700.png` (Es'hail 2 icon source image)
+  - Source URL: https://www.rfhamdesign.com/images/eshail-2_03_1038.jpg
+  - Description: Es'hail 2 / QO-100 geostationary satellite
+  - Processing note: black-space background removed via edge-connected near-black extraction, Earth/watermark excluded, foreground tight-trimmed and center-fitted, then exported as transparent icon presets:
+    - `64/43700.png`
+    - `128/43700.png`
+    - `256/43700.png`
