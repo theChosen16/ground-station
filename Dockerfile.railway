@@ -50,8 +50,6 @@ COPY --from=frontend-builder /app/frontend/package.json ./frontend/package.json
 ENV PYTHONPATH=/app
 ENV STATIC_FILES_DIR=/app/frontend/dist
 ENV GS_ENVIRONMENT=production
-# Railway inyecta $PORT automáticamente; por defecto 7000
-ENV PORT=7000
 
 # Crear directorios de datos persistentes
 RUN mkdir -p /app/backend/data/db \
@@ -62,12 +60,8 @@ RUN mkdir -p /app/backend/data/db \
              /app/backend/data/transcriptions \
              /app/backend/data/decoded
 
-# Volumen para datos persistentes (db, grabaciones)
-# VOLUME /app/backend/data
-
-EXPOSE 7000
-
 WORKDIR /app/backend
 
-# Railway pasa PORT como variable de entorno; el CMD lo usa
-CMD python app.py --host 0.0.0.0 --port 7000
+# Railway inyecta $PORT automáticamente; usar shell form para expansión de variable
+CMD sh -c "python app.py --host 0.0.0.0 --port ${PORT:-7000}"
+

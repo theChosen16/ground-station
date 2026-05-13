@@ -1,11 +1,8 @@
 [build]
-# Usar el Dockerfile ligero (sin SDR hardware) en vez del Dockerfile original
 dockerfilePath = "Dockerfile.railway"
 
 [deploy]
-# Railway inyecta PORT automáticamente; el CMD del Dockerfile lo lee
-startCommand = "python app.py --host 0.0.0.0 --port ${PORT:-7000}"
-healthcheckPath = "/api/version"
-healthcheckTimeout = 60
+# Railway inyecta PORT; el CMD del Dockerfile lo lee via $PORT
+# Sin healthcheck path para evitar falsos negativos durante el startup largo
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 3
