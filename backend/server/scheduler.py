@@ -235,7 +235,7 @@ def start_scheduler(sio, process_manager, background_task_manager):
         next_run = (
             job.next_run_time.strftime("%Y-%m-%d %H:%M:%S %Z") if job.next_run_time else "N/A"
         )
-        logger.info(f"  - {job.name} → next run: {next_run}")
+        logger.info(f"  - {job.name} -> next run: {next_run}")
 
     return scheduler
 

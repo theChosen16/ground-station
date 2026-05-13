@@ -21,7 +21,13 @@ import socket
 import threading
 from typing import Any, Dict, List, Union
 
-import SoapySDR
+try:
+    import SoapySDR
+except ImportError:  # e.g. Windows dev env without SoapySDR Python bindings built
+    SoapySDR = None  # type: ignore[assignment,misc]
+
+SOAPYSDR_AVAILABLE: bool = SoapySDR is not None
+
 from zeroconf import ServiceStateChange
 from zeroconf.asyncio import AsyncServiceBrowser, AsyncZeroconf
 
@@ -102,6 +108,14 @@ def soapysdr_to_dict(sdr_obj):
 
 async def query_sdrs_with_python_module(ip, port, timeout=5):
     """Query for SDRs using Python SoapySDR module with timeout protection."""
+    if not SOAPYSDR_AVAILABLE:
+        logger.warning(
+            "SoapySDR Python module is not installed; skipping remote device enumeration for %s:%s",
+            ip,
+            port,
+        )
+        return [], "soapy_unavailable"
+
     try:
         # This needs to run in a thread pool to avoid blocking the event loop
         # Wrap with a timeout to prevent hanging on problematic servers
@@ -125,6 +139,9 @@ async def query_sdrs_with_python_module(ip, port, timeout=5):
 
 def _query_with_soapysdr_module(ip, port):
     """Execute the SoapySDR module query in a separate thread."""
+    if SoapySDR is None:
+        raise RuntimeError("SoapySDR module is not available")
+
     try:
         # Construct remote device arguments
         args = {"driver": "remote", "remote:host": ip, "remote:port": str(port)}

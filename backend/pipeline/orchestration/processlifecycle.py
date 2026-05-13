@@ -27,11 +27,29 @@ from fft.processor import fft_processor_process
 from handlers.entities.filebrowser import emit_file_browser_state
 from pipeline.streaming.iqbroadcaster import IQBroadcaster
 from vfos.state import VFOManager
-from workers.rtlsdrworker import rtlsdr_worker_process
+
+# Worker entry points: optional native stacks (RTL-SDR DLL, SoapySDR, UHD) may be absent on dev hosts.
+try:
+    from workers.rtlsdrworker import rtlsdr_worker_process
+except ImportError:
+    rtlsdr_worker_process = None  # type: ignore[assignment,misc]
+
+try:
+    from workers.soapysdrlocalworker import soapysdr_local_worker_process
+except ImportError:
+    soapysdr_local_worker_process = None  # type: ignore[assignment,misc]
+
+try:
+    from workers.soapysdrremoteworker import soapysdr_remote_worker_process
+except ImportError:
+    soapysdr_remote_worker_process = None  # type: ignore[assignment,misc]
+
+try:
+    from workers.uhdworker import uhd_worker_process
+except ImportError:
+    uhd_worker_process = None  # type: ignore[assignment,misc]
+
 from workers.sigmfplaybackworker import sigmf_playback_worker_process
-from workers.soapysdrlocalworker import soapysdr_local_worker_process
-from workers.soapysdrremoteworker import soapysdr_remote_worker_process
-from workers.uhdworker import uhd_worker_process
 
 # Add setproctitle import for process naming
 try:
@@ -372,8 +390,18 @@ class ProcessLifecycleManager:
                 sdr_settings=sdr_config.get("sdr_settings") or {},
             ).to_dict()
 
-            if not worker_process:
-                raise Exception(f"Worker process {worker_process} for SDR id: {sdr_id} not found")
+            if worker_process is None:
+                err = (
+                    f"SDR worker for type {sdr_device['type']} is not available on this system "
+                    "(missing librtlsdr / SoapySDR / UHD bindings). Install drivers or use SigMF playback."
+                )
+                self.logger.error(err)
+                await self.sio.emit(
+                    SocketEvents.SDR_STATUS,
+                    {"streaming": False, "error": err},
+                    room=client_id,
+                )
+                raise RuntimeError(err)
 
             # Create a named worker function
             named_worker = _create_named_worker_process(worker_process, process_name)

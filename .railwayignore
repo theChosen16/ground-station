@@ -1,0 +1,39 @@
+# Railway ignora estos directorios al hacer "railway up"
+# (equivalente al .dockerignore pero para el upload del contexto al builder de Railway)
+
+# Entornos virtuales Python
+backend/venv/
+backend/.python312/
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+*.egg-info/
+backend/ground_station.egg-info/
+
+# Dependencias Node.js (Railway las instala durante el build)
+frontend/node_modules/
+
+# Git
+.git/
+.github/
+
+# Temporales y datos locales (no van a producción)
+tmp/
+backend/data/db/
+backend/data/recordings/
+backend/data/snapshots/
+backend/data/audio/
+backend/data/transcriptions/
+backend/data/decoded/
+
+# Artefactos de build locales
+frontend/dist/
+
+# IDE y OS
+.vscode/
+.idea/
+*.DS_Store
+Thumbs.db
+
+# Logs
+*.log

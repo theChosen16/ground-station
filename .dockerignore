@@ -50,6 +50,7 @@ ENV/
 env/
 .venv
 backend/venv/
+backend/.python312/
 
 # Testing
 backend/tests/

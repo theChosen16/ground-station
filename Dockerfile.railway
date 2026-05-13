@@ -1,0 +1,73 @@
+# =============================================================================
+# Dockerfile.railway — Ground Station (Railway Cloud, no SDR hardware)
+#
+# Estrategia:
+#   • Stage 1: build del frontend React/Vite
+#   • Stage 2: backend Python mínimo (sin UHD/SoapySDR/GNU Radio/SatDump)
+#   • Railway detecta PORT y lo expone automáticamente
+# =============================================================================
+
+# ── Stage 1: Build frontend ───────────────────────────────────────────────────
+FROM node:20-alpine AS frontend-builder
+
+WORKDIR /app/frontend
+
+COPY frontend/package.json frontend/package-lock.json* ./
+RUN npm ci --prefer-offline
+
+COPY frontend/ ./
+RUN cp .env.production .env
+RUN npm run build
+
+# ── Stage 2: Python backend (slim) ────────────────────────────────────────────
+FROM python:3.12-slim
+
+WORKDIR /app
+
+# Runtime system deps (sin librerías SDR de hardware)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    g++ \
+    libsqlite3-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copiar requirements del backend y filtrar deps no disponibles en cloud
+COPY backend/requirements.txt ./requirements.txt
+
+# Instalar dependencias Python
+# psutil y zeroconf son cross-platform; netifaces y aiozeroconf se excluyeron
+# en los cambios locales existentes del fork
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copiar código fuente del backend
+COPY backend/ ./backend/
+
+# Copiar frontend compilado
+COPY --from=frontend-builder /app/frontend/dist ./frontend/dist
+COPY --from=frontend-builder /app/frontend/package.json ./frontend/package.json
+
+# Variables de entorno para producción en Railway
+ENV PYTHONPATH=/app
+ENV STATIC_FILES_DIR=/app/frontend/dist
+ENV GS_ENVIRONMENT=production
+# Railway inyecta $PORT automáticamente; por defecto 7000
+ENV PORT=7000
+
+# Crear directorios de datos persistentes
+RUN mkdir -p /app/backend/data/db \
+             /app/backend/data/configs \
+             /app/backend/data/recordings \
+             /app/backend/data/snapshots \
+             /app/backend/data/audio \
+             /app/backend/data/transcriptions \
+             /app/backend/data/decoded
+
+# Volumen para datos persistentes (db, grabaciones)
+VOLUME /app/backend/data
+
+EXPOSE 7000
+
+WORKDIR /app/backend
+
+# Railway pasa PORT como variable de entorno; el CMD lo usa
+CMD ["sh", "-c", "python app.py --host 0.0.0.0 --port ${PORT:-7000}"]
