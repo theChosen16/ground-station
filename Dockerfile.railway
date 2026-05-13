@@ -63,7 +63,7 @@ RUN mkdir -p /app/backend/data/db \
              /app/backend/data/decoded
 
 # Volumen para datos persistentes (db, grabaciones)
-VOLUME /app/backend/data
+# VOLUME /app/backend/data
 
 EXPOSE 7000
 
