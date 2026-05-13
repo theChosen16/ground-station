@@ -70,4 +70,4 @@ EXPOSE 7000
 WORKDIR /app/backend
 
 # Railway pasa PORT como variable de entorno; el CMD lo usa
-CMD ["sh", "-c", "python app.py --host 0.0.0.0 --port ${PORT:-7000}"]
+CMD python app.py --host 0.0.0.0 --port 7000
