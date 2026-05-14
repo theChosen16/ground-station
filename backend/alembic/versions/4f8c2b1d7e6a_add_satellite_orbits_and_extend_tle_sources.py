@@ -104,7 +104,7 @@ def upgrade() -> None:
             """
         )
     )
-    bind.execute(sa.text("UPDATE tle_sources SET enabled = 1 WHERE enabled IS NULL"))
+    bind.execute(sa.text("UPDATE tle_sources SET enabled = TRUE WHERE enabled IS NULL"))
     bind.execute(sa.text("UPDATE tle_sources SET priority = 100 WHERE priority IS NULL"))
     bind.execute(
         sa.text(
@@ -139,7 +139,7 @@ def upgrade() -> None:
             "enabled",
             existing_type=sa.Boolean(),
             nullable=False,
-            server_default="1",
+            server_default=sa.text("TRUE"),
         )
         batch_op.alter_column(
             "priority",
