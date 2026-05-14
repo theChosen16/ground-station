@@ -64,11 +64,12 @@ class AwareDateTime(TypeDecorator):
 
     def process_bind_param(self, value, dialect):
         """
-        (Optional) When writing to DB, you can also
-        enforce that all datetimes are stored in UTC.
+        When writing to DB, ensure the datetime is converted to UTC 
+        and made naive to avoid asyncpg errors with TIMESTAMP WITHOUT TIME ZONE.
         """
-        if value is not None and value.tzinfo is None:
-            return value.replace(tzinfo=timezone.utc)
+        if value is not None:
+            if value.tzinfo is not None:
+                value = value.astimezone(timezone.utc).replace(tzinfo=None)
         return value
 
 
