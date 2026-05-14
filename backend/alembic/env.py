@@ -28,6 +28,14 @@ config = context.config
 
 
 def _build_database_url(path: str) -> str:
+    """Build async DB URL. Prefers DATABASE_URL (Railway PostgreSQL) over SQLite."""
+    env_url = os.environ.get("DATABASE_URL")
+    if env_url:
+        if env_url.startswith("postgresql://"):
+            return env_url.replace("postgresql://", "postgresql+asyncpg://", 1)
+        if env_url.startswith("postgres://"):
+            return env_url.replace("postgres://", "postgresql+asyncpg://", 1)
+        return env_url
     if os.path.isabs(path):
         return f"sqlite+aiosqlite:///{os.path.abspath(path)}"
     return f"sqlite+aiosqlite:///./{path}"

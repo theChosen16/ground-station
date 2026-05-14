@@ -73,10 +73,20 @@ def _has_pending_migrations(alembic_cfg: Config, db_path: Path) -> bool:
     heads = set(script.get_heads())
     if not heads:
         return False
-    if not db_path.exists():
-        return True
 
-    engine = create_engine(f"sqlite:///{db_path}")
+    env_url = os.environ.get("DATABASE_URL")
+    if env_url:
+        db_url = env_url
+        if db_url.startswith("postgres://"):
+            db_url = db_url.replace("postgres://", "postgresql://", 1)
+        if db_url.startswith("postgresql+asyncpg://"):
+            db_url = db_url.replace("postgresql+asyncpg://", "postgresql://", 1)
+    else:
+        if not db_path.exists():
+            return True
+        db_url = f"sqlite:///{db_path}"
+
+    engine = create_engine(db_url)
     try:
         with engine.connect() as connection:
             context = MigrationContext.configure(connection)
@@ -127,10 +137,16 @@ def run_migrations():
     try:
         alembic_cfg = get_alembic_config()
         db_path = _resolve_db_path()
-        if _has_pending_migrations(alembic_cfg, db_path):
-            backup_path = _backup_db_before_migration(db_path)
-            if backup_path:
-                print(f"Created pre-migration DB backup: {backup_path}", file=sys.stderr)
+        
+        # Only try to backup if we are using SQLite file DB (no DATABASE_URL)
+        if not os.environ.get("DATABASE_URL"):
+            if _has_pending_migrations(alembic_cfg, db_path):
+                backup_path = _backup_db_before_migration(db_path)
+                if backup_path:
+                    print(f"Created pre-migration DB backup: {backup_path}", file=sys.stderr)
+        else:
+            # We are using PostgreSQL or other DB URL, don't try to copy files
+            pass
 
         # Run migrations to the latest revision
         # Alembic will use the runtime logging configuration from data/configs/log_config.yaml
