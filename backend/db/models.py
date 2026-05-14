@@ -401,7 +401,7 @@ class TrackingState(Base):
     __tablename__ = "tracking_state"
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, nullable=False)
     name = Column(String, index=True, unique=True)
-    value = Column(JSON, index=True)
+    value = Column(JSON)
     added = Column(AwareDateTime, nullable=False, default=datetime.now(timezone.utc))
     updated = Column(
         AwareDateTime,
