@@ -138,6 +138,8 @@ def _backfill_table(
 
 def upgrade() -> None:
     connection = op.get_bind()
+    if connection.engine.name != "sqlite":
+        return
     mapping, next_target_number = _build_rotator_tracker_map(connection)
     next_target_number = _backfill_table(
         connection, "monitored_satellites", mapping, next_target_number

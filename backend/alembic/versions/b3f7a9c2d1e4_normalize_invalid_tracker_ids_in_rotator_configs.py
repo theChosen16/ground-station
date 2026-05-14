@@ -245,6 +245,8 @@ def _backfill_table(
 
 def upgrade() -> None:
     connection = op.get_bind()
+    if connection.engine.name != "sqlite":
+        return
     mapping, next_target_number = _build_rotator_tracker_map(connection)
     next_target_number = _normalize_legacy_tracking_state(connection, mapping, next_target_number)
     legacy_value_by_rotator: dict[str, dict] = {}

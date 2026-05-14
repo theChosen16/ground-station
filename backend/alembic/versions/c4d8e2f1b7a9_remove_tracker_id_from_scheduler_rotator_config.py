@@ -61,6 +61,8 @@ def _strip_legacy_tracker_ids(connection, table_name: str) -> None:
 
 def upgrade() -> None:
     connection = op.get_bind()
+    if connection.engine.name != "sqlite":
+        return
     _strip_legacy_tracker_ids(connection, "monitored_satellites")
     _strip_legacy_tracker_ids(connection, "scheduled_observations")
 

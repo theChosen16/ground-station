@@ -92,6 +92,8 @@ def _resolve_tracker_state_name(connection, rotator_id: str) -> str:
 
 def upgrade() -> None:
     connection = op.get_bind()
+    if connection.engine.name != "sqlite":
+        return
     legacy_row = connection.exec_driver_sql(
         "SELECT id, name, value FROM tracking_state WHERE name = ? LIMIT 1",
         (LEGACY_NAME,),
