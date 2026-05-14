@@ -37,7 +37,7 @@ def _normalize_to_bool(column_name: str) -> None:
         sa.text(
             f"""
             UPDATE transmitters
-            SET {column_name} = 1
+            SET {column_name} = TRUE
             WHERE LOWER(TRIM(CAST({column_name} AS TEXT))) IN ('true', 'yes', 'on')
             """
         )
@@ -46,7 +46,7 @@ def _normalize_to_bool(column_name: str) -> None:
         sa.text(
             f"""
             UPDATE transmitters
-            SET {column_name} = 0
+            SET {column_name} = FALSE
             WHERE LOWER(TRIM(CAST({column_name} AS TEXT))) IN ('false', 'no', 'off')
             """
         )
