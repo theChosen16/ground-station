@@ -18,6 +18,7 @@ import json
 import uuid
 from datetime import datetime, timezone
 from enum import Enum as PyEnum
+from typing import Any
 
 from sqlalchemy import (
     JSON,
@@ -38,7 +39,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import DeclarativeMeta
 
 # Creates a base class for declarative models using SQLAlchemy.
-Base: DeclarativeMeta = declarative_base()
+Base: Any = declarative_base()
 
 # Creates a MetaData object that holds schema-level information such as tables, columns, and constraints.
 metadata = MetaData()

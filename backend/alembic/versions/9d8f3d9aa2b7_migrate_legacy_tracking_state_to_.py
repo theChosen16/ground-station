@@ -60,7 +60,7 @@ def _normalize_tracker_name(raw_name) -> str:
 
 
 def _extract_target_number(raw_tracker_id: str) -> int:
-    tracker_id = str(raw_tracker_id or "").strip()
+    tracker_id = (raw_tracker_id or "").strip()
     matched = TARGET_ID_PATTERN.fullmatch(tracker_id)
     if not matched:
         return 0

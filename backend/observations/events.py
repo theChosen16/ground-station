@@ -18,8 +18,10 @@
 # Global socketio instance (set by startup.py)
 _sio = None
 
+from typing import Any
+
 # Global observation sync instance (set by startup.py)
-observation_sync = None
+observation_sync: Any = None
 
 
 def set_socketio_instance(sio):

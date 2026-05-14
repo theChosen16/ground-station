@@ -6,7 +6,7 @@ import tempfile
 import zipfile
 from contextlib import asynccontextmanager
 from pathlib import Path
-from typing import Set
+from typing import Set, Optional
 
 import socketio
 from engineio.payload import Payload
@@ -59,7 +59,7 @@ audio_broadcaster: AudioBroadcaster = AudioBroadcaster(audio_queue)
 runtimestate.audio_queue = audio_queue
 
 # Background task manager (initialized after sio is created)
-background_task_manager: BackgroundTaskManager = None
+background_task_manager: Optional[BackgroundTaskManager] = None
 runtimestate.process_manager = process_manager
 
 

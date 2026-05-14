@@ -19,6 +19,7 @@ import os
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from common.arguments import arguments
+from typing import Any
 
 
 def _build_database_url(db_path: str) -> str:
@@ -48,7 +49,7 @@ def _build_database_url(db_path: str) -> str:
 DATABASE_URL = _build_database_url(arguments.db)
 _is_sqlite = DATABASE_URL.startswith("sqlite")
 
-_engine_kwargs = dict(
+_engine_kwargs: dict[str, Any] = dict(
     echo=False,
     pool_size=5,
     max_overflow=10,
@@ -76,7 +77,7 @@ def create_subprocess_engine():
     Returns:
         A new AsyncEngine instance with the same configuration as the main engine
     """
-    kwargs = dict(
+    kwargs: dict[str, Any] = dict(
         echo=False,
         pool_size=5,
         max_overflow=10,
