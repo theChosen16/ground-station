@@ -51,6 +51,9 @@ def _normalize_itu_notification_value(raw_value):
 
 def upgrade() -> None:
     bind = op.get_bind()
+    if bind.engine.name != "sqlite":
+        return
+
     rows = bind.execute(
         sa.text(
             """
