@@ -70,7 +70,7 @@ def upgrade() -> None:
         sa.Column(
             "status",
             sa.Enum(
-                "SCHEDULED", "RUNNING", "COMPLETED", "CANCELLED", "FAILED", name="observationstatus"
+                "SCHEDULED", "RUNNING", "COMPLETED", "CANCELLED", "FAILED", name="observationstatus", native_enum=False
             ),
             nullable=False,
         ),

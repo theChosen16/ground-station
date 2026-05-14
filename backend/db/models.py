@@ -267,7 +267,7 @@ class SDRs(Base):
     serial = Column(String, nullable=True)
     host = Column(String, nullable=True)
     port = Column(Integer, nullable=True)
-    type = Column(Enum(SDRType), nullable=True)
+    type = Column(Enum(SDRType, native_enum=False), nullable=True)
     driver = Column(String, nullable=True)
     frequency_min = Column(Integer, nullable=True)
     frequency_max = Column(Integer, nullable=True)
@@ -386,7 +386,7 @@ class Groups(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, nullable=False)
     name = Column(String, nullable=False)
     identifier = Column(String, nullable=True)
-    type = Column(Enum(SatelliteGroupType), nullable=False, default=SatelliteGroupType.USER)
+    type = Column(Enum(SatelliteGroupType, native_enum=False), nullable=False, default=SatelliteGroupType.USER)
     satellite_ids = Column(JsonField, nullable=True)
     added = Column(AwareDateTime, nullable=False, default=datetime.now(timezone.utc))
     updated = Column(
@@ -416,8 +416,8 @@ class Cameras(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, nullable=False)
     name = Column(String, nullable=False)
     url = Column(String, nullable=True)
-    type = Column(Enum(CameraType), nullable=False)
-    status = Column(Enum("active", "inactive"), nullable=False, default="active")
+    type = Column(Enum(CameraType, native_enum=False), nullable=False)
+    status = Column(Enum("active", "inactive", native_enum=False), nullable=False, default="active")
     added = Column(AwareDateTime, nullable=False, default=datetime.now(timezone.utc))
     updated = Column(
         AwareDateTime,
@@ -541,7 +541,7 @@ class ScheduledObservations(Base):
     name = Column(String, nullable=False)
     enabled = Column(Boolean, nullable=False, default=True, index=True)
     status = Column(
-        Enum(ObservationStatus),
+        Enum(ObservationStatus, native_enum=False),
         nullable=False,
         default=ObservationStatus.SCHEDULED,
         index=True,
