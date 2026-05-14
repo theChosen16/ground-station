@@ -385,3 +385,7 @@ async def init_db():
         _needs_initial_sync = True
     else:
         logger.info("Database initialized (existing, migrations applied)")
+
+    # Explicitly dispose the engine so that asyncpg connections don't remain bound 
+    # to the temporary event loop created by asyncio.run(init_db())
+    await engine.dispose()
